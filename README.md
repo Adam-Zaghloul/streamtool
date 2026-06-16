@@ -50,6 +50,48 @@ Your Browser → mitmproxy (localhost) → Website
 
 ---
 
+## Real-World Use Case — Watch Sports Without Buffering
+
+Free sports streaming sites (UFC, soccer, basketball, etc.) are notorious for stuttering and freezing — not because the stream itself is low quality, but because **thousands of people are hitting the same embedded player simultaneously**, overloading the site's delivery layer.
+
+What those sites actually do under the hood is embed a video player that connects to a separate, high-quality source stream (usually HLS over a CDN). That source stream is perfectly capable of delivering smooth 1080p — you just never connect to it directly.
+
+**StreamTool extracts that source URL and hands it to mpv**, which connects to it directly as a single client — no ads, no buffering overlay, no chat widget consuming CPU, no site traffic in between.
+
+```
+Normal experience:
+  You → Free streaming site (10,000 viewers) → Embedded player → Source stream
+                              ^
+                    overloaded, buffering, ads
+
+With StreamTool:
+  You → Source stream (direct)
+             ^
+     smooth, full quality, no middleman
+```
+
+### Why it's smoother
+
+- mpv is a native video player — no browser overhead, no JavaScript, no ads rendering
+- You connect directly to the CDN edge node, not through the streaming site's servers
+- HLS streams are designed for direct playback — mpv handles them natively and efficiently
+- No other viewers affect your connection — you are pulling your own stream independently
+
+### Typical workflow for a live match
+
+```
+1. Open the free streaming site in Chrome/Edge
+2. Run StreamTool — proxy starts automatically
+3. Press Play on the stream
+4. StreamTool captures the source URL instantly
+5. mpv opens — smooth, direct, no buffering
+6. Minimize the terminal and watch the match
+```
+
+> **Note:** This tool only captures and plays streams you can already access in your browser. It does not bypass paywalls, subscriptions, or geo-restrictions. It simply improves the playback quality of streams you already have legitimate access to.
+
+---
+
 ## Features
 
 - **Fully self-installing** — downloads and configures all dependencies on first run
